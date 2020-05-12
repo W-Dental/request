@@ -1,4 +1,4 @@
-export const objectToQueryString = (payload?: Record<string, string> | null): string =>
+export const objectToQueryString = (payload?: Record<string, string> | string | null): string =>
   payload ? `?${new URLSearchParams(payload).toString()}` : ''
 
 /*
