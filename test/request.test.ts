@@ -4,6 +4,7 @@ test.each`
   payload      | expected
   ${undefined} | ${''}
   ${null}      | ${''}
+  ${'a=1'}     | ${'?a=1'}
   ${{ a: 1 }}  | ${'?a=1'}
 `('objectToQueryString should return $expected', ({ payload, expected }) => {
   expect(objectToQueryString(payload)).toEqual(expected)
