@@ -20,7 +20,8 @@
   "umd:main": "dist/request.umd.js",
   "scripts": {
     "build": "bili",
-    "prepublishOnly": "npm test && npm run build"
+    "prepublishOnly": "npm test && npm run build",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -33,9 +34,12 @@
   },
   "homepage": "https://github.com/W-Dental/request#readme",
   "devDependencies": {
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/jest": "^25.2.1",
     "bili": "^4.10.0",
+    "jest": "^26.0.1",
     "rollup-plugin-typescript2": "^0.27.0",
-    "ts-node": "^8.10.1",
     "typescript": "^3.8.3"
   }
 }
