@@ -1,5 +1,5 @@
-export const objectToQueryString = (obj?: Record<string, string> | null): string =>
-  obj ? `?${new URLSearchParams(obj).toString()}` : ''
+export const objectToQueryString = (payload?: Record<string, string> | null): string =>
+  payload ? `?${new URLSearchParams(payload).toString()}` : ''
 
 /*
 import { get } from 'lodash';
