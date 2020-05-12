@@ -1,6 +1,10 @@
 export const objectToQueryString = (payload?: Record<string, string> | string | null): string =>
   payload ? `?${new URLSearchParams(payload).toString()}` : ''
 
+export const getFormatedUrl = (url: string) => (
+  params?: Record<string, string> | string | null
+): string => `${url}${url.endsWith('/') ? '' : '/'}${objectToQueryString(params)}`
+
 /*
 import { get } from 'lodash';
 import { getItem } from '../../storage';
