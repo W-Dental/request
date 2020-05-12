@@ -1,3 +1,6 @@
+export const objectToQueryString = (obj?: Record<string, string> | null): string =>
+  obj ? `?${new URLSearchParams(obj).toString()}` : ''
+
 /*
 import { get } from 'lodash';
 import { getItem } from '../../storage';
