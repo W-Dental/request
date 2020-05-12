@@ -1,3 +1,14 @@
+import { objectToQueryString } from '../src/request'
+
+test.each`
+  payload      | expected
+  ${undefined} | ${''}
+  ${null}      | ${''}
+  ${{ a: 1 }}  | ${'?a=1'}
+`('objectToQueryString should return $expected', ({ payload, expected }) => {
+  expect(objectToQueryString(payload)).toEqual(expected)
+})
+
 /*
 import HttpHandler from './httpHandler'
 import { clear, setItem } from '../../storage'
@@ -139,4 +150,4 @@ test.each`
     const handler = new HttpHandler('/resource', 'host')
     await expect(handler.requestWrite({}, 'post'))
       .rejects.toThrow(expected)
-  })*/
+  }) */
