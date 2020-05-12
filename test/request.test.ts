@@ -1,13 +1,26 @@
-import { objectToQueryString } from '../src/request'
+import { objectToQueryString, getFormatedUrl } from '../src/request'
 
 test.each`
   payload      | expected
   ${undefined} | ${''}
   ${null}      | ${''}
   ${'a=1'}     | ${'?a=1'}
+  ${'?a=1'}    | ${'?a=1'}
   ${{ a: 1 }}  | ${'?a=1'}
 `('objectToQueryString should return $expected', ({ payload, expected }) => {
   expect(objectToQueryString(payload)).toEqual(expected)
+})
+
+test.each`
+  payload      | expected
+  ${undefined} | ${''}
+  ${null}      | ${''}
+  ${'a=1'}     | ${'?a=1'}
+  ${'?a=1'}    | ${'?a=1'}
+  ${{ a: 1 }}  | ${'?a=1'}
+`('getFormatedUrl should return api/$expected', ({ payload, expected }) => {
+  const handler = getFormatedUrl('api')
+  expect(handler(payload)).toEqual(`api/${expected}`)
 })
 
 /*
