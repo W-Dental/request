@@ -1,4 +1,6 @@
-import { objectToQueryString, getFormatedUrl } from '../src/request'
+import { objectToQueryString, getFormatedUrl, getHeaders } from '../src/request'
+
+afterEach(localStorage.clear)
 
 test.each`
   payload      | expected
@@ -23,6 +25,18 @@ test.each`
   expect(handler(payload)).toEqual(`api/${expected}`)
 })
 
+test.each`
+  token
+  ${undefined}
+  ${'123'}
+`('getHeaders() should return expected Headers', ({ token }) => {
+  if (token) {
+    localStorage.setItem('token', token)
+  }
+  const headers = getHeaders()
+  expect(headers.get('content-type')).toEqual('application/json')
+  expect(headers.get('Authorization')).toEqual(token ? `bearer ${token}` : null)
+})
 /*
 import HttpHandler from './httpHandler'
 import { clear, setItem } from '../../storage'

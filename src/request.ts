@@ -5,6 +5,15 @@ export const getFormatedUrl = (url: string) => (
   params?: Record<string, string> | string | null
 ): string => `${url}${url.endsWith('/') ? '' : '/'}${objectToQueryString(params)}`
 
+export const getHeaders = (): Headers => {
+  const headers = new Headers()
+  headers.append('content-type', 'application/json')
+  const token = window.localStorage.getItem('token')
+  if (token) {
+    headers.append('Authorization', `bearer ${token}`)
+  }
+  return headers
+}
 /*
 import { get } from 'lodash';
 import { getItem } from '../../storage';
