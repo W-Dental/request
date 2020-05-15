@@ -62,7 +62,5 @@
       "./test/setupJest.ts"
     ]
   },
-  "dependencies": {
-    "isomorphic-fetch": "^2.2.1"
-  }
+  "dependencies": {}
 }
