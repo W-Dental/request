@@ -1,4 +1,6 @@
-type RequestMethods = 'post' | 'get' | 'put' | 'patch' | 'delete';
+type RequestDefaultMethods = 'post' | 'get' | 'put' | 'patch';
+type RequestMethods = RequestDefaultMethods | 'delete';
+type RequestFunctions = RequestDefaultMethods | 'del';
 
 type UrlParams = Record<string, string> | string | null
 
@@ -14,7 +16,7 @@ type RequestOptions = {
 }
 
 export type Requests = {
-  [key in RequestMethods]: RequestMethod;
+  [key in RequestFunctions]: RequestMethod;
 }
 
 export const objectToQueryString = (params?: UrlParams): string =>
