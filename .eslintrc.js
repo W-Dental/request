@@ -5,7 +5,12 @@ module.exports = {
     node: true,
     jest: true,
   },
-  extends: ['standard', 'plugin:prettier/recommended'],
+  extends: [
+    'standard',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
+  ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly',
