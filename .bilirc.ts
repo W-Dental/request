@@ -6,7 +6,9 @@ const configuration: Configuration = {
   output: {
     format: [
       'es',
+      'es-min',
       'cjs',
+      'cjs-min',
       'umd',
       'umd-min'
     ],
