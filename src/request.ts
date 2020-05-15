@@ -1,5 +1,3 @@
-import 'isomorphic-fetch'
-
 type RequestMethods = 'post' | 'get' | 'put' | 'patch' | 'delete';
 
 type UrlParams = Record<string, string> | string | null
