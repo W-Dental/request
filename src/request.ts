@@ -1,9 +1,33 @@
-export const objectToQueryString = (payload?: Record<string, string> | string | null): string =>
-  payload ? `?${new URLSearchParams(payload).toString()}` : ''
+import 'isomorphic-fetch'
 
-export const getFormatedUrl = (url: string) => (
-  params?: Record<string, string> | string | null
-): string => `${url}${url.endsWith('/') ? '' : '/'}${objectToQueryString(params)}`
+type RequestMethods = 'post' | 'get' | 'put' | 'patch' | 'delete';
+
+type UrlParams = Record<string, string> | string | null
+
+type RequestMethod = <ResponseData, Body = undefined>(payload: {
+  options?: RequestInit | { body: Body };
+  params?: UrlParams;
+  url: string;
+}) => Promise<ResponseData> | never;
+
+type RequestOptions = {
+  url: string;
+  options?: RequestInit;
+}
+
+export type Requests = {
+  del: RequestMethod;
+  get: RequestMethod;
+  patch: RequestMethod;
+  post: RequestMethod;
+  put: RequestMethod;
+}
+
+export const objectToQueryString = (params?: UrlParams): string =>
+  params ? `?${new URLSearchParams(params).toString()}` : ''
+
+export const getFormatedUrl = ({ url, params }: { url: string; params?: UrlParams }): string =>
+  `${url}${url.endsWith('/') ? '' : '/'}${objectToQueryString(params)}`
 
 export const getHeaders = (): Headers => {
   const headers = new Headers()
@@ -14,90 +38,50 @@ export const getHeaders = (): Headers => {
   }
   return headers
 }
-/*
-import { get } from 'lodash';
-import { getItem } from '../../storage';
 
-export default class HttpHandler {
-  constructor(resource = '', api = process.env.GATSBY_HOST + '/api') {
-    this.url = api + resource;
+const validateRequest = ({ body, method = 'post' }: RequestInit): never | void => {
+  if (['patch', 'post', 'put'].includes(method) && !body) {
+    throw new Error(`A ${method} request must have a body`)
   }
-
-  _jsonToQueryString = obj => (
-    obj ? `?${new URLSearchParams(obj).toString()}` : ''
-  );
-
-  _buildUrl(params) {
-    const querystring = typeof params === 'string' ? params : this._jsonToQueryString(params);
-    return `${this.url}/${querystring}`;
-  }
-
-  _getAuthorizationHeader() {
-    const token = getItem('token');
-    return token ? { Authorization: `bearer ${token}` } : {};
-  }
-
-  getConf(method, body) {
-    let result = {
-      method,
-      headers: { 'content-type': 'application/json', ...this._getAuthorizationHeader() },
-      mode: 'cors'
-    };
-
-    if (body) {
-      result.body = JSON.stringify(body);
-    }
-
-    return result;
-  }
-
-  get(params = '') {
-    return fetch(this._buildUrl(params), this.getConf('GET'))
-      .then(data => data.json())
-      .then(data => data)
-      .catch(this.onError);
-  }
-
-  post(body) {
-    return this.requestWrite(body, 'POST');
-  }
-
-  put(body) {
-    return this.requestWrite(body, 'PUT');
-  }
-
-  async requestWrite(body, method) {
-    if (!body) {
-      throw new Error('This request needs body');
-    } else if (!method) {
-      throw new Error('This request needs method');
-    }
-
-    try {
-      const response = await fetch(this.url, this.getConf(method, body))
-      const data = await response.json();
-      return response.ok ? data : this.onError({ statusCode: response.status, data });
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  formatErrorMessages = (messages = []) => (
-    messages.map(({ text = '' }) => text).join(', ')
-  )
-
-  onError({ statusCode, data = {} }) {
-    const errorMessages = get(data, 'messages') || [];
-    const hasErrors = errorMessages.length > 0;
-    const isBadRequest = statusCode === 400;
-    const shouldFormatErrorMessage = hasErrors && isBadRequest;
-
-    throw new Error(
-      shouldFormatErrorMessage
-        ? this.formatErrorMessages(errorMessages)
-        : 'Ocorreu um erro inesperado.'
-    );
-  }
-
 }
-*/
+
+export const doRequest = <ResponseData>({
+  url,
+  options = {},
+}: RequestOptions): Promise<ResponseData> | never => {
+  validateRequest({ ...options })
+  return fetch(url, { ...(options ?? {}), ...getHeaders() })
+    .then(
+      async (response: Response & { json: () => Promise<ResponseData> }): Promise<ResponseData> =>
+        response.json()
+    )
+}
+
+const handler = (baseUrl: string, method: RequestMethods) =>
+  <ResponseData, Body>({ options = {}, params, url }: {
+    options?: RequestInit | { body: Body };
+    params?: UrlParams;
+    url: string;
+  }): Promise<ResponseData> | never => {
+    const { body, ...restOptions } = options;
+    return doRequest({
+      url: getFormatedUrl({ url: baseUrl + url, params }),
+      options: {
+        ...restOptions,
+        method,
+        body: (
+          typeof body === 'object'
+            ? JSON.stringify(body)
+            : body
+        ) as string
+      }
+    })
+  }
+
+export default (baseUrl: string): Requests => ({
+  get: handler(baseUrl, 'get'),
+  post: handler(baseUrl, 'post'),
+  put: handler(baseUrl, 'put'),
+  patch: handler(baseUrl, 'patch'),
+  del: handler(baseUrl, 'delete'),
+})
