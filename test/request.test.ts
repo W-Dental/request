@@ -67,7 +67,6 @@ test.each`
 test('request handler should return all request methods', () => {
   const methods = Handler('/base-url')
   for (const method of ['del', 'get', 'patch', 'post', 'put']) {
-    console.log(method, methods)
     expect(Object.keys(methods).includes(method)).toBeTruthy();
   }
 })
