@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock'
-import Handler, { objectToQueryString, getFormatedUrl, getHeaders, doRequest, Requests } from '../src/request'
+import Handler, { objectToQueryString, getFormatedUrl, getHeaders, doRequest } from '../src/request'
 
 afterEach(localStorage.clear)
 beforeEach(fetchMock.resetMocks)
