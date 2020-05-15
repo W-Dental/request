@@ -6,7 +6,8 @@
   "compilerOptions": {
     "target": "ES5",
     "lib": [
-      "ES5"
+      "ES5",
+      "DOM"
     ],
     // Declaration configuration
     "declaration": true,
