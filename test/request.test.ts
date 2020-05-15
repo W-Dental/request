@@ -16,14 +16,19 @@ test.each`
 })
 
 test.each`
-  params      | expected
-  ${undefined} | ${''}
-  ${null}      | ${''}
-  ${'a=1'}     | ${'?a=1'}
-  ${'?a=1'}    | ${'?a=1'}
-  ${{ a: 1 }}  | ${'?a=1'}
-`('getFormatedUrl should return api/$expected', ({ params, expected }) => {
-  expect(getFormatedUrl({ url: 'api', params })).toEqual(`api/${expected}`)
+  url       | params       | expected
+  ${'api'}  | ${undefined} | ${''}
+  ${'api'}  | ${null}      | ${''}
+  ${'api'}  | ${'a=1'}     | ${'?a=1'}
+  ${'api'}  | ${'?a=1'}    | ${'?a=1'}
+  ${'api'}  | ${{ a: 1 }}  | ${'?a=1'}
+  ${'api/'} | ${undefined} | ${''}
+  ${'api/'} | ${null}      | ${''}
+  ${'api/'} | ${'a=1'}     | ${'?a=1'}
+  ${'api/'} | ${'?a=1'}    | ${'?a=1'}
+  ${'api/'} | ${{ a: 1 }}  | ${'?a=1'}
+`('getFormatedUrl should return api/$expected', ({ url, params, expected }) => {
+  expect(getFormatedUrl({ url, params })).toEqual(`api/${expected}`)
 })
 
 test.each`
@@ -51,14 +56,21 @@ test('doRequest should throw an error', async () => {
     .rejects.toThrow('fail')
 })
 
+test('doRequest should not throw an error when it passes option undefined', async () => {
+  fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
+  const result = await doRequest<{ a: number }>({ url: '/' })
+  expect(result).toEqual({ a: 1 })
+})
+
 test.each`
   method
   ${'patch'}
   ${'post'}
   ${'put'}
-`('doRequest($method) should throw an error because it has no body', async ({ method }) => {
+`('handler.$method should throw an error because it has no body', async ({ method }: { method: 'patch' | 'post' | 'put' }) => {
   try {
-    await doRequest({ url: '/', options: { method } })
+    const handler = Handler('/base-url');
+    await handler[method]({ url: '/' })
   } catch (error) {
     expect(error.message).toEqual(`A ${method} request must have a body`)
   }
@@ -69,4 +81,11 @@ test('request handler should return all request methods', () => {
   for (const method of ['del', 'get', 'patch', 'post', 'put']) {
     expect(Object.keys(methods).includes(method)).toBeTruthy();
   }
+})
+
+test('post should parse body from object to BodyInit', async () => {
+  fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
+  const handler = Handler('/base')
+  const result = await handler.post<{ a: number }, { a: number }>({ url: '/api', options: { method: 'post', body: { a: 1 } } })
+  expect(result).toEqual({ a: 1 })
 })
