@@ -14,11 +14,7 @@ type RequestOptions = {
 }
 
 export type Requests = {
-  del: RequestMethod;
-  get: RequestMethod;
-  patch: RequestMethod;
-  post: RequestMethod;
-  put: RequestMethod;
+  [key in RequestMethods]: RequestMethod;
 }
 
 export const objectToQueryString = (params?: UrlParams): string =>
@@ -37,7 +33,7 @@ export const getHeaders = (): Headers => {
   return headers
 }
 
-const validateRequest = ({ body, method = 'post' }: RequestInit): never | void => {
+const validateRequest = ({ body, method = '' }: RequestInit): never | void => {
   if (['patch', 'post', 'put'].includes(method) && !body) {
     throw new Error(`A ${method} request must have a body`)
   }
@@ -47,8 +43,8 @@ export const doRequest = <ResponseData>({
   url,
   options = {},
 }: RequestOptions): Promise<ResponseData> | never => {
-  validateRequest({ ...options })
-  return fetch(url, { ...(options ?? {}), ...getHeaders() })
+  validateRequest(options)
+  return fetch(url, { ...options, ...getHeaders() })
     .then(
       async (response: Response & { json: () => Promise<ResponseData> }): Promise<ResponseData> =>
         response.json()
