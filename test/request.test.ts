@@ -70,7 +70,7 @@ test.each`
 `('handler.$method should throw an error because it has no body', async ({ method }: { method: 'patch' | 'post' | 'put' }) => {
   try {
     const handler = Handler('/base-url');
-    await handler[method]({ url: '/', options: { method } })
+    await handler[method]({ url: '/' })
   } catch (error) {
     expect(error.message).toEqual(`A ${method} request must have a body`)
   }
@@ -81,4 +81,11 @@ test('request handler should return all request methods', () => {
   for (const method of ['del', 'get', 'patch', 'post', 'put']) {
     expect(Object.keys(methods).includes(method)).toBeTruthy();
   }
+})
+
+test('post should parse body from object to BodyInit', async () => {
+  fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
+  const handler = Handler('/base')
+  const result = await handler.post<{ a: number }, { a: number }>({ url: '/api', options: { method: 'post', body: { a: 1 } } })
+  expect(result).toEqual({ a: 1 })
 })
