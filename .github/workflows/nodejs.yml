@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-
+    name: 'build'
     runs-on: ubuntu-latest
 
     strategy:
@@ -26,4 +26,16 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: npm ci
     - run: npm run build --if-present
-    - run: npm test
+    - run: npm run test --coverage --if-present
+  codacy-coverage-reporter:
+    needs: ['build']
+    runs-on: ubuntu-latest
+    name: codacy-coverage-reporter
+    steps:
+      - uses: actions/checkout@master
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage/clover.xml
+    
