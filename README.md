@@ -19,12 +19,12 @@ type BodyParams = {
   param: number
 }
 
-handler.get<ResponseData, BodyParams>({
+handler.get<ResponseData>({
   url: '/api',
   params: { param: 1 }
 });
 
-handler.del<ResponseData, BodyParams>({
+handler.del<ResponseData>({
   url: '/api',
   params: { param: 1 }
 });
