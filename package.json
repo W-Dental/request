@@ -23,7 +23,7 @@
     "lint": "./node_modules/.bin/eslint ./src/** ./test/**",
     "prepublishOnly": "npm test && npm run build",
     "test": "jest",
-    "test-coverage": "jest --coverage && cat ./coverage/lcov.info | codacy-coverage"
+    "test-coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
