@@ -10,32 +10,11 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  codacy-coverage-reporter:
-    runs-on: ubuntu-latest
-    name: codacy-coverage-reporter
-    strategy:
-      matrix:
-        node-version: [12.x]
-    steps:  
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm run test-coverage
-      - run: ls
-      - uses: actions/checkout@master
-      - uses: codacy/codacy-coverage-reporter-action@master
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage/clover.xml
   build:
     name: 'build'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -43,6 +22,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
+      - run: npm test
       - run: npm run build
   
     
