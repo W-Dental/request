@@ -10,34 +10,41 @@ on:
     branches: [ master, develop ]
 
 jobs:
-  build:
-    name: 'build'
+  codacy-coverage-reporter:
     runs-on: ubuntu-latest
-
+    name: codacy-coverage-reporter
     strategy:
       matrix:
         node-version: [12.x]
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm run test-coverage --if-present
-    - run: ls
-  codacy-coverage-reporter:
-    needs: ['build']
-    runs-on: ubuntu-latest
-    name: codacy-coverage-reporter
-    steps:
-      - uses: actions/checkout@master
+    steps:  
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run test-coverage
       - run: ls
+      - uses: actions/checkout@master
       - name: Run codacy-coverage-reporter
+        uses: actions/setup-node@v1
         uses: codacy/codacy-coverage-reporter-action@master
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage/clover.xml
+  build:
+    name: 'build'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build
+  
     
