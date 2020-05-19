@@ -6,6 +6,11 @@
 
 A tiny request handler to facilitate writing requests
 
+## Installation
+```
+npm i @w.dental/request
+```
+
 ## How to use
 
 ```ts
