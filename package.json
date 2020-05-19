@@ -1,5 +1,5 @@
 {
-  "name": "@wd/request",
+  "name": "@w.dental/request",
   "version": "0.0.1",
   "sideEffects": false,
   "description": "A fetch handler",

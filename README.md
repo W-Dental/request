@@ -1,8 +1,10 @@
 # Request
 [![Code Quality](https://api.codacy.com/project/badge/Grade/d46e4e2fac6e439a92ab9f2f992c9de0)](https://app.codacy.com/gh/W-Dental/request?utm_source=github.com&utm_medium=referral&utm_content=W-Dental/request&utm_campaign=Badge_Grade_Dashboard)
 [![Coverage Percentage](https://app.codacy.com/project/badge/Coverage/2a9b69c4e705403d9e222ddbde06ea48)](https://www.codacy.com/gh/W-Dental/request?utm_source=github.com&utm_medium=referral&utm_content=W-Dental/request&utm_campaign=Badge_Coverage)
+![Minified Size](https://img.shields.io/bundlephobia/min/@w.dental/request)
+![Minzipped Size](https://img.shields.io/bundlephobia/minzip/@w.dental/request)
 
-A request handler to facilitate writing requests
+A tiny request handler to facilitate writing requests
 
 ## How to use
 
