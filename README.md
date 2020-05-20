@@ -11,6 +11,24 @@ A tiny request handler to facilitate writing requests
 npm i @w.dental/request
 ```
 
+### CDN Installation
+This package is available on CDNs too ([JSDelivr](https://www.jsdelivr.com/) and [UNPKG](https://unpkg.com/)).
+
+```html
+<!-- Using JSDelivr -->
+<script src="https://cdn.jsdelivr.net/npm/@w.dental/request"></script>
+
+<!-- Using UNPKG -->
+<script src="https://unpkg.com/@w.dental/request"></script>
+
+<script>
+  const req = Request.default('https://YOUR.API.com')
+
+  req.get({ url: '/search' })
+    .then(data => console.log(data))
+</script>
+```
+
 ## How to use
 
 ```ts
@@ -89,5 +107,7 @@ getHeaders()
   }
 */
 ```
+
+## License
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FW-Dental%2Frequest.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FW-Dental%2Frequest?ref=badge_large)
