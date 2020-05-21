@@ -20,4 +20,4 @@ jobs:
       - run: npm ci
       - run: npm install -g codecov
       - run: npm run test-coverage
-      - run: codecov -t ${{ secrets.CODACY_PROJECT_TOKEN }}
+      - run: codecov -t ${{ secrets.CODECOV_TOKEN }}
