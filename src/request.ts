@@ -9,6 +9,11 @@ type Interceptors = {
   onError?: <ResponseData>(data: {}) => Promise<ResponseData>|never;
 }
 
+type RequestConfig = {
+  interceptors?: Interceptors;
+  headers? : Headers
+}
+
 type RequestMethod = <ResponseData, Body = undefined>(payload: {
   options?: RequestInit | { body: Body };
   params?: UrlParams;
@@ -18,7 +23,7 @@ type RequestMethod = <ResponseData, Body = undefined>(payload: {
 type RequestOptions = {
   url: string;
   options?: RequestInit;
-  interceptors?: Interceptors;
+  config?: RequestConfig;
 }
 
 export type Requests = {
@@ -50,7 +55,7 @@ const validateRequest = ({ body, method = '' }: RequestInit): never | void => {
 export const doRequest =  <ResponseData> ({
   url,
   options = {},
-  interceptors,
+  config,
 }: RequestOptions): Promise<ResponseData> | never => {
   validateRequest(options)
   return fetch(url, { ...options, ...getHeaders() })
@@ -62,16 +67,17 @@ export const doRequest =  <ResponseData> ({
       }
     )
     .then((result: ResponseData) => (
-      interceptors && interceptors.transformResponse ? <Promise<ResponseData>>interceptors.transformResponse(result) : result
+      config && config.interceptors && config.interceptors.transformResponse ? (config.interceptors.transformResponse(result) as Promise<ResponseData>) : result
     ))
-    .catch(async (error) => {
-      if(interceptors && interceptors.onError)
+    .catch(async (error: ResponseData) => {
+      if(config && config.interceptors && config.interceptors.onError)
         return error
       throw error
     })
 }
 
-const handler = (baseUrl: string, method: RequestMethods, interceptors?: Interceptors) =>
+
+const handler = (baseUrl: string, method: RequestMethods, config?: RequestConfig) =>
   <ResponseData, Body>({ options = {}, params, url }: {
     options?: RequestInit | { body: Body };
     params?: UrlParams;
@@ -89,14 +95,14 @@ const handler = (baseUrl: string, method: RequestMethods, interceptors?: Interce
             : body
         ) as string
       },
-      interceptors
+      config
     })
   }
 
-export default (baseUrl: string, interceptors?: Interceptors): Requests => ({
-  get: handler(baseUrl, 'get', interceptors),
-  post: handler(baseUrl, 'post', interceptors),
-  put: handler(baseUrl, 'put', interceptors),
-  patch: handler(baseUrl, 'patch', interceptors),
-  del: handler(baseUrl, 'delete', interceptors),
+export default (baseUrl: string, config?: RequestConfig): Requests => ({
+  get: handler(baseUrl, 'get', config),
+  post: handler(baseUrl, 'post', config),
+  put: handler(baseUrl, 'put', config),
+  patch: handler(baseUrl, 'patch', config),
+  del: handler(baseUrl, 'delete', config),
 })
