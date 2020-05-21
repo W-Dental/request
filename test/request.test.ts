@@ -1,5 +1,5 @@
 import fetchMock from 'jest-fetch-mock'
-import Handler, { objectToQueryString, getFormatedUrl, getHeaders, doRequest } from '../src/request'
+import Handler, { objectToQueryString, getFormatedUrl, doRequest } from '../src/request'
 
 afterEach(localStorage.clear)
 beforeEach(fetchMock.resetMocks)
@@ -29,19 +29,6 @@ test.each`
   ${'api/'} | ${{ a: 1 }}  | ${'?a=1'}
 `('getFormatedUrl should return api/$expected', ({ url, params, expected }) => {
   expect(getFormatedUrl({ url, params })).toEqual(`api/${expected}`)
-})
-
-test.each`
-  token
-  ${undefined}
-  ${'123'}
-`('getHeaders() should return expected Headers', ({ token }) => {
-  if (token) {
-    localStorage.setItem('token', token)
-  }
-  const headers = getHeaders()
-  expect(headers.get('content-type')).toEqual('application/json')
-  expect(headers.get('Authorization')).toEqual(token ? `bearer ${token}` : null)
 })
 
 test('doRequest should return expected data', async () => {

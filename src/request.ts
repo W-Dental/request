@@ -11,7 +11,7 @@ type Interceptors = {
 
 type RequestConfig = {
   interceptors?: Interceptors;
-  headers? : Headers
+  headers? : Headers;
 }
 
 type RequestMethod = <ResponseData, Body = undefined>(payload: {
@@ -36,16 +36,6 @@ export const objectToQueryString = (params?: UrlParams): string =>
 export const getFormatedUrl = ({ url, params }: { url: string; params?: UrlParams }): string =>
   `${url}${url.endsWith('/') ? '' : '/'}${objectToQueryString(params)}`
 
-export const getHeaders = (): Headers => {
-  const headers = new Headers()
-  headers.append('content-type', 'application/json')
-  const token = window.localStorage.getItem('token')
-  if (token) {
-    headers.append('Authorization', `bearer ${token}`)
-  }
-  return headers
-}
-
 const validateRequest = ({ body, method = '' }: RequestInit): never | void => {
   if (['patch', 'post', 'put'].includes(method) && !body) {
     throw new Error(`A ${method} request must have a body`)
@@ -58,7 +48,7 @@ export const doRequest =  <ResponseData> ({
   config,
 }: RequestOptions): Promise<ResponseData> | never => {
   validateRequest(options)
-  return fetch(url, { ...options, ...getHeaders() })
+  return fetch(url, { headers: config?.headers, ...options })
     .then(
       async (response: Response & { json: () => Promise<ResponseData> }): Promise<ResponseData> => {
         if(response.ok)
