@@ -18,5 +18,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
+      - run: npm install -g codecov
       - run: npm run test-coverage
-      - run: bash <(curl -s https://codecov.io/bash) -s coverage -t ${{ secrets.CODACY_PROJECT_TOKEN }}
+      - run: codecov
