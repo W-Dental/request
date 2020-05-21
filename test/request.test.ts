@@ -50,6 +50,35 @@ test('doRequest should return expected data', async () => {
   expect(result).toEqual({ a: 1 })
 })
 
+test('doRequest should return expected data with transform response adding {transformReponse: `activated`}', async () => {
+  type Example = {
+    a: number;
+    transformReponse?: string;
+  }
+  fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
+  const transformResponse = <Example>(data: Example) => { return {...data, transformReponse: `activated`} };
+  const result = await doRequest<{ a: number }>({ url: '/', options: { method: 'get' }, config: {interceptors: { transformResponse }} })
+  expect(result).toEqual({ a: 1, transformReponse: `activated` })
+})
+
+test('doRequest should return a message passing on interceptor onError throwing message onError: fail', async () => {
+  type Example = {
+    message: string;
+  }
+  fetchMock.mockRejectOnce( () => Promise.reject({message: 'error'}))
+  const onError = <Example>(data: Example) => { return {...data} };
+  const result = await doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} })
+  expect(result).toEqual({message: 'error'})
+})
+
+test('doRequest should throw an error passing on interceptor onError throwing message onError: fail', async () => {
+  fetchMock.mockRejectOnce(new Error('fail'))
+  const onError = <Error>(data: Error) => { throw new Error('onError: fail')};
+  await expect(doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} }))
+  .rejects.toThrow('onError: fail')
+})
+
+
 test('doRequest should throw an error', async () => {
   fetchMock.mockRejectOnce(new Error('fail'))
   await expect(doRequest({ url: '/', options: { method: 'get' } }))
