@@ -1,5 +1,6 @@
 # Request
 [![DeepScan grade](https://deepscan.io/api/teams/9337/projects/11812/branches/175573/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=9337&pid=11812&bid=175573)
+[![codecov](https://codecov.io/gh/W-Dental/request/branch/master/graph/badge.svg)](https://codecov.io/gh/W-Dental/request)
 ![Minified Size](https://img.shields.io/bundlephobia/min/@w.dental/request)
 ![Minzipped Size](https://img.shields.io/bundlephobia/minzip/@w.dental/request)
 
