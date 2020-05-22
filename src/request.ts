@@ -5,8 +5,8 @@ type RequestFunctions = RequestDefaultMethods | 'del';
 type UrlParams = Record<string, string> | string | null
 
 type Interceptors = {
-  transformResponse?: <ResponseData>(data: {}) => Promise<ResponseData>;
-  onError?: <ResponseData>(data: {}) => Promise<ResponseData>|never;
+  transformResponse?: <ResponseData>(data: ResponseData) => ResponseData;
+  onError?: <ResponseData>(data: ResponseData) => never | ResponseData;
 }
 
 type RequestConfig = {
@@ -57,15 +57,14 @@ export const doRequest =  <ResponseData> ({
       }
     )
     .then((result: ResponseData) => (
-      config && config.interceptors && config.interceptors.transformResponse ? (config.interceptors.transformResponse(result) as Promise<ResponseData>) : result
+      config?.interceptors?.transformResponse ? (config.interceptors.transformResponse(result) as ResponseData) : result
     ))
     .catch(async (error: ResponseData) => {
-      if(config && config.interceptors && config.interceptors.onError)
-        return error
+      if(config?.interceptors?.onError)
+        return config.interceptors.onError(error)
       throw error
     })
 }
-
 
 const handler = (baseUrl: string, method: RequestMethods, config?: RequestConfig) =>
   <ResponseData, Body>({ options = {}, params, url }: {
