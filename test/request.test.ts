@@ -43,33 +43,33 @@ test('doRequest should return expected data with transform response adding {tran
     transformReponse?: string;
   }
   fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
-  const transformResponse = <Example>(data: Example): Example => { return {...data, transformReponse: `activated`} };
-  const result = await doRequest<{ a: number }>({ url: '/', options: { method: 'get' }, config: {interceptors: { transformResponse }} })
+  const transformResponse = <Example>(data: Example): Example => { return { ...data, transformReponse: `activated` } };
+  const result = await doRequest<{ a: number }>({ url: '/', options: { method: 'get' }, config: { interceptors: { transformResponse } } })
   expect(result).toEqual({ a: 1, transformReponse: `activated` })
 })
 
 test('doRequest should return a message passing on interceptor onError throwing message onError: fail', async () => {
   fetchMock.mockRejectOnce(new Error('error'))
-  const onError = (): {message: string} => ({message: 'error'});
-  const result = await doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} })
-  expect(result).toEqual({message: 'error'})
+  const onError = (): { message: string } => ({ message: 'error' });
+  const result = await doRequest({ url: '/', options: { method: 'get' }, config: { interceptors: { onError } } })
+  expect(result).toEqual({ message: 'error' })
 })
 
 test('doRequest should return on onError {message: "Bad Request"} if not response.ok ', async () => {
   type Example = {
     message: string;
   }
-  fetchMock.mockResponseOnce(JSON.stringify({message: 'Bad Request'}), {status: 400});
-  const onError = <Example>(data: Example): Example => { return {...data} };
-  const result = await doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} })
-  expect(result).toEqual({message: 'Bad Request'})
+  fetchMock.mockResponseOnce(JSON.stringify({ message: 'Bad Request' }), { status: 400 });
+  const onError = <Example>(data: Example): Example => { return { ...data } };
+  const result = await doRequest({ url: '/', options: { method: 'get' }, config: { interceptors: { onError } } })
+  expect(result).toEqual({ message: 'Bad Request' })
 })
 
 test('doRequest should throw an error passing on interceptor onError throwing message onError: fail', async () => {
   fetchMock.mockRejectOnce(new Error('fail'))
-  const onError = <Error>(): Error => { throw new Error('onError: fail')};
-  await expect(doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} }))
-  .rejects.toThrow('onError: fail')
+  const onError = <Error>(): Error => { throw new Error('onError: fail') };
+  await expect(doRequest({ url: '/', options: { method: 'get' }, config: { interceptors: { onError } } }))
+    .rejects.toThrow('onError: fail')
 })
 
 
@@ -111,4 +111,33 @@ test('post should parse body from object to BodyInit', async () => {
   const handler = Handler('/base')
   const result = await handler.post<{ a: number }, { a: number }>({ url: '/api', options: { method: 'post', body: { a: 1 } } })
   expect(result).toEqual({ a: 1 })
+})
+
+
+test.skip.each`
+  token
+  ${'1'}
+  ${'2'}
+`('should execute fetch correctly if it has expected headers fulfilled', async ({ token }) => {
+  fetchMock.mockIf('api/resource', (req: Request) => {
+    console.log(req.headers.get('Authorization'))
+    if (req.headers.get('Authorization') === '1') {
+      return Promise.resolve({
+        status: 200,
+        body: 'ok'
+      })
+    }
+    return Promise.resolve({
+      status: 400,
+      body: 'Server`s fail'
+    })
+  })
+  const headers = new Headers()
+  headers.append('Authorization', token)
+
+  const handler = Handler('api', { headers })
+  if (token === '1') {
+    const result = await handler.get({ url: '/resource' })
+    expect(result).resolves.toEqual('ok')
+  }
 })
