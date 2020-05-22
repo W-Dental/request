@@ -11,7 +11,7 @@ type Interceptors = {
 
 type RequestConfig = {
   interceptors?: Interceptors;
-  headers? : Headers;
+  headers?: Headers;
 }
 
 type RequestMethod = <ResponseData, Body = undefined>(payload: {
@@ -36,42 +36,32 @@ export const objectToQueryString = (params?: UrlParams): string =>
 export const getFormatedUrl = ({ url, params }: { url: string; params?: UrlParams }): string =>
   `${url}${url.endsWith('/') ? '' : '/'}${objectToQueryString(params)}`
 
-export const getHeaders = (): Headers => {
-  const headers = new Headers()
-  headers.append('content-type', 'application/json')
-  const token = window.localStorage.getItem('token')
-  if (token) {
-    headers.append('Authorization', `bearer ${token}`)
-  }
-  return headers
-}
-
 const validateRequest = ({ body, method = '' }: RequestInit): never | void => {
   if (['patch', 'post', 'put'].includes(method) && !body) {
     throw new Error(`A ${method} request must have a body`)
   }
 }
 
-export const doRequest =  <ResponseData> ({
+export const doRequest = <ResponseData>({
   url,
   options = {},
-  config,
+  config: { headers = new Headers(), interceptors = {} } = {},
 }: RequestOptions): Promise<ResponseData> | never => {
   validateRequest(options)
-  return fetch(url, { ...options, ...getHeaders() })
+  return fetch(url, { headers, ...options })
     .then(
       async (response: Response & { json: () => Promise<ResponseData> }): Promise<ResponseData> => {
-        if(response.ok)
+        if (response.ok)
           return response.json();
         throw await response.json();
       }
     )
     .then((result: ResponseData) => (
-      config?.interceptors?.transformResponse ? (config.interceptors.transformResponse(result) as ResponseData) : result
+      interceptors?.transformResponse ? (interceptors.transformResponse(result) as ResponseData) : result
     ))
     .catch(async (error: ResponseData) => {
-      if(config?.interceptors?.onError)
-        return config.interceptors.onError(error)
+      if (interceptors?.onError)
+        return interceptors.onError(error)
       throw error
     })
 }
