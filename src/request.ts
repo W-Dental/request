@@ -11,7 +11,7 @@ type Interceptors = {
 
 type RequestConfig = {
   interceptors?: Interceptors;
-  headers? : Headers;
+  headers?: Headers;
 }
 
 type RequestMethod = <ResponseData, Body = undefined>(payload: {
@@ -42,26 +42,26 @@ const validateRequest = ({ body, method = '' }: RequestInit): never | void => {
   }
 }
 
-export const doRequest =  <ResponseData> ({
+export const doRequest = <ResponseData>({
   url,
   options = {},
-  config,
+  config: { headers, interceptors = {} } = {},
 }: RequestOptions): Promise<ResponseData> | never => {
   validateRequest(options)
-  return fetch(url, { headers: config?.headers, ...options })
+  return fetch(url, { headers, ...options })
     .then(
       async (response: Response & { json: () => Promise<ResponseData> }): Promise<ResponseData> => {
-        if(response.ok)
+        if (response.ok)
           return response.json();
         throw await response.json();
       }
     )
     .then((result: ResponseData) => (
-      config?.interceptors?.transformResponse ? (config.interceptors.transformResponse(result) as ResponseData) : result
+      interceptors?.transformResponse ? (interceptors.transformResponse(result) as ResponseData) : result
     ))
     .catch(async (error: ResponseData) => {
-      if(config?.interceptors?.onError)
-        return config.interceptors.onError(error)
+      if (interceptors?.onError)
+        return interceptors.onError(error)
       throw error
     })
 }
