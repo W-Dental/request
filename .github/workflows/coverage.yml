@@ -1,13 +1,13 @@
-name: Codacy Coverage
+name: Coverage Reporter
 
 on:
   push:
-    branches: [ master   ]
+    branches: [ master ]
 
 jobs:
-  codacy-coverage-reporter:
+  coverage-reporter:
     runs-on: ubuntu-latest
-    name: codacy-coverage-reporter
+    name: coverage-reporter
     strategy:
       matrix:
         node-version: [12.x]
@@ -18,5 +18,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
+      - run: npm install -g codecov
       - run: npm run test-coverage
-      - run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/clover.xml -t ${{ secrets.CODACY_PROJECT_TOKEN }}
+      - run: codecov -t ${{ secrets.CODECOV_TOKEN }}

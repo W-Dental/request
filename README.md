@@ -1,6 +1,6 @@
 # Request
-[![Code Quality](https://api.codacy.com/project/badge/Grade/d46e4e2fac6e439a92ab9f2f992c9de0)](https://app.codacy.com/gh/W-Dental/request?utm_source=github.com&utm_medium=referral&utm_content=W-Dental/request&utm_campaign=Badge_Grade_Dashboard)
-[![Coverage Percentage](https://app.codacy.com/project/badge/Coverage/2a9b69c4e705403d9e222ddbde06ea48)](https://www.codacy.com/gh/W-Dental/request?utm_source=github.com&utm_medium=referral&utm_content=W-Dental/request&utm_campaign=Badge_Coverage)
+[![DeepScan grade](https://deepscan.io/api/teams/9337/projects/11812/branches/175573/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=9337&pid=11812&bid=175573)
+[![codecov](https://codecov.io/gh/W-Dental/request/branch/master/graph/badge.svg)](https://codecov.io/gh/W-Dental/request)
 ![Minified Size](https://img.shields.io/bundlephobia/min/@w.dental/request)
 ![Minzipped Size](https://img.shields.io/bundlephobia/minzip/@w.dental/request)
 
