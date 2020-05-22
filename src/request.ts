@@ -45,7 +45,7 @@ const validateRequest = ({ body, method = '' }: RequestInit): never | void => {
 export const doRequest = <ResponseData>({
   url,
   options = {},
-  config: { headers, interceptors = {} } = {},
+  config: { headers = new Headers(), interceptors = {} } = {},
 }: RequestOptions): Promise<ResponseData> | never => {
   validateRequest(options)
   return fetch(url, { headers, ...options })
