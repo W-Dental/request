@@ -71,6 +71,16 @@ test('doRequest should return a message passing on interceptor onError throwing 
   expect(result).toEqual({message: 'error'})
 })
 
+test('doRequest should return on onError {message: "Bad Request"} if not response.ok ', async () => {
+  type Example = {
+    message: string;
+  }
+  fetchMock.mockResponseOnce(JSON.stringify({message: 'Bad Request'}), {status: 400});
+  const onError = <Example>(data: Example) => { return {...data} };
+  const result = await doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} })
+  expect(result).toEqual({message: 'Bad Request'})
+})
+
 test('doRequest should throw an error passing on interceptor onError throwing message onError: fail', async () => {
   fetchMock.mockRejectOnce(new Error('fail'))
   const onError = <Error>(data: Error) => { throw new Error('onError: fail')};
