@@ -50,6 +50,42 @@ test('doRequest should return expected data', async () => {
   expect(result).toEqual({ a: 1 })
 })
 
+test('doRequest should return expected data with transform response adding {transformReponse: `activated`}', async () => {
+  type Example = {
+    a: number;
+    transformReponse?: string;
+  }
+  fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
+  const transformResponse = <Example>(data: Example): Example => { return {...data, transformReponse: `activated`} };
+  const result = await doRequest<{ a: number }>({ url: '/', options: { method: 'get' }, config: {interceptors: { transformResponse }} })
+  expect(result).toEqual({ a: 1, transformReponse: `activated` })
+})
+
+test('doRequest should return a message passing on interceptor onError throwing message onError: fail', async () => {
+  fetchMock.mockRejectOnce(new Error('error'))
+  const onError = (): {message: string} => ({message: 'error'});
+  const result = await doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} })
+  expect(result).toEqual({message: 'error'})
+})
+
+test('doRequest should return on onError {message: "Bad Request"} if not response.ok ', async () => {
+  type Example = {
+    message: string;
+  }
+  fetchMock.mockResponseOnce(JSON.stringify({message: 'Bad Request'}), {status: 400});
+  const onError = <Example>(data: Example): Example => { return {...data} };
+  const result = await doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} })
+  expect(result).toEqual({message: 'Bad Request'})
+})
+
+test('doRequest should throw an error passing on interceptor onError throwing message onError: fail', async () => {
+  fetchMock.mockRejectOnce(new Error('fail'))
+  const onError = <Error>(): Error => { throw new Error('onError: fail')};
+  await expect(doRequest({ url: '/', options: { method: 'get' }, config: {interceptors: { onError }} }))
+  .rejects.toThrow('onError: fail')
+})
+
+
 test('doRequest should throw an error', async () => {
   fetchMock.mockRejectOnce(new Error('fail'))
   await expect(doRequest({ url: '/', options: { method: 'get' } }))
