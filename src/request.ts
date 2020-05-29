@@ -37,7 +37,7 @@ export const getFormatedUrl = ({ url, params }: { url: string; params?: UrlParam
   `${url}${url.endsWith('/') ? '' : '/'}${objectToQueryString(params)}`
 
 const validateRequest = ({ body, method = '' }: RequestInit): never | void => {
-  if (['patch', 'post', 'put'].includes(method) && !body) {
+  if (['patch', 'put'].includes(method) && !body) {
     throw new Error(`A ${method} request must have a body`)
   }
 }
