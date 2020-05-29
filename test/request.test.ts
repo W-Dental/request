@@ -88,7 +88,6 @@ test('doRequest should not throw an error when it passes option undefined', asyn
 test.each`
   method
   ${'patch'}
-  ${'post'}
   ${'put'}
 `('handler.$method should throw an error because it has no body', async ({ method }: { method: 'patch' | 'post' | 'put' }) => {
   try {
@@ -97,6 +96,13 @@ test.each`
   } catch (error) {
     expect(error.message).toEqual(`A ${method} request must have a body`)
   }
+})
+
+test('handler with post without body should make request with success', async () => {
+  fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
+  const handler = Handler('/base')
+  const result = await handler.post<{ a: number }, { a: number }>({ url: '/api', options: { method: 'post' } })
+  expect(result).toEqual({ a: 1 })
 })
 
 test('request handler should return all request methods', () => {
