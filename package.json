@@ -21,6 +21,7 @@
   "scripts": {
     "build": "bili",
     "lint": "./node_modules/.bin/eslint ./src/** ./test/**",
+    "lint:fix": "./node_modules/.bin/eslint ./src/** ./test/** --fix",
     "prepublishOnly": "npm test && npm run build",
     "test": "jest",
     "test-coverage": "jest --coverage"
@@ -50,6 +51,7 @@
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
+    "husky": "^4.2.5",
     "jest": "^26.0.1",
     "jest-fetch-mock": "^3.0.3",
     "jest-localstorage-mock": "^2.4.2",
@@ -63,5 +65,14 @@
       "./test/setupJest.ts"
     ]
   },
-  "dependencies": {}
+  "dependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:fix",
+      "pre-push": "npm test"
+    }
+  },
+  "lint-staged": {
+    "*.(t|j)s?(x)": "npm run lint:fix"
+  }
 }
