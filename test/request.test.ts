@@ -89,7 +89,7 @@ test.each`
   method
   ${'patch'}
   ${'put'}
-`('handler.$method should throw an error because it has no body', async ({ method }: { method: 'patch' | 'post' | 'put' }) => {
+`('handler.$method should throw an error because it has no body', async ({ method }: { method: 'patch' | 'put' }) => {
   try {
     const handler = Handler('/base-url');
     await handler[method]({ url: '/' })
