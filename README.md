@@ -7,7 +7,7 @@
 A tiny request handler to facilitate writing requests
 
 ## Installation
-`npm i @w.dental/request`
+`npm i @w.dental/request` or `yarn add @w.dental/request`
 
 ### CDN Installation
 This package is available on CDNs too ([JSDelivr](https://www.jsdelivr.com/) and [UNPKG](https://unpkg.com/)).
