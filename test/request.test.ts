@@ -49,8 +49,11 @@ test('doRequest should return expected data with transform response adding {tran
 })
 
 test('doRequest should return a message passing on interceptor onError throwing message onError: fail', async () => {
+  type Example = {
+    message: string;
+  }
   fetchMock.mockRejectOnce(new Error('error'))
-  const onError = (): { message: string } => ({ message: 'error' });
+  const onError = <Example>(data: Example): Example => ({ ...data, message: 'error' });
   const result = await doRequest({ url: '/', options: { method: 'get' }, config: { interceptors: { onError } } })
   expect(result).toEqual({ message: 'error' })
 })
