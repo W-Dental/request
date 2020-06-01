@@ -5,8 +5,8 @@ type RequestFunctions = RequestDefaultMethods | 'del';
 type UrlParams = Record<string, string> | string | null
 
 type Interceptors = {
-  transformResponse?: <ResponseData>(data: ResponseData) => ResponseData;
-  onError?: <ResponseData>(data: ResponseData) => never | ResponseData;
+  transformResponse?: <TransformedResponse, ResponseData>(data: ResponseData) => TransformedResponse;
+  onError?: <TransformedResponse, ResponseData>(data: ResponseData) => never | TransformedResponse;
 }
 
 type RequestConfig = {
@@ -14,11 +14,11 @@ type RequestConfig = {
   headers?: Headers;
 }
 
-type RequestMethod = <ResponseData, Body = undefined>(payload: {
+type RequestMethod = <ResponseData, TransformedResponse, Body = undefined>(payload: {
   options?: RequestInit | { body: Body };
   params?: UrlParams;
   url: string;
-}) => Promise<ResponseData> | never;
+}) => Promise<ResponseData | TransformedResponse> | never;
 
 type RequestOptions = {
   url: string;
@@ -42,11 +42,11 @@ const validateRequest = ({ body, method = '' }: RequestInit): never | void => {
   }
 }
 
-export const doRequest = <ResponseData>({
+export const doRequest = <ResponseData, TransformedResponse>({
   url,
   options = {},
   config: { headers = new Headers(), interceptors = {} } = {},
-}: RequestOptions): Promise<ResponseData> | never => {
+}: RequestOptions): Promise<ResponseData | TransformedResponse> | never => {
   validateRequest(options)
   return fetch(url, { headers, ...options })
     .then(
@@ -57,7 +57,7 @@ export const doRequest = <ResponseData>({
       }
     )
     .then((result: ResponseData) => (
-      interceptors?.transformResponse ? (interceptors.transformResponse(result) as ResponseData) : result
+      interceptors?.transformResponse ? interceptors.transformResponse(result) : result
     ))
     .catch(async (error: ResponseData) => {
       if (interceptors?.onError)
@@ -67,11 +67,11 @@ export const doRequest = <ResponseData>({
 }
 
 const handler = (baseUrl: string, method: RequestMethods, config?: RequestConfig) =>
-  <ResponseData, Body>({ options = {}, params, url }: {
+  <ResponseData, TransformedResponse, Body>({ options = {}, params, url }: {
     options?: RequestInit | { body: Body };
     params?: UrlParams;
     url: string;
-  }): Promise<ResponseData> | never => {
+  }): Promise<ResponseData | TransformedResponse> | never => {
     const { body, ...restOptions } = options;
     return doRequest({
       url: getFormatedUrl({ url: baseUrl + url, params }),
