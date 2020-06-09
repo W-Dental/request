@@ -57,11 +57,11 @@ export const doRequest = <ResponseData>({
       }
     )
     .then((result: ResponseData) => (
-      interceptors?.transformResponse ? (interceptors.transformResponse(result) as ResponseData) : result
+      interceptors?.transformResponse ? interceptors.transformResponse<ResponseData>(result) : result
     ))
     .catch(async (error: ResponseData) => {
       if (interceptors?.onError)
-        return interceptors.onError(error)
+        return interceptors.onError<ResponseData>(error)
       throw error
     })
 }
