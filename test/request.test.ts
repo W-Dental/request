@@ -33,19 +33,19 @@ test.each`
 
 test('doRequest should return expected data', async () => {
   fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
-  const result = await doRequest({ url: '/', options: { method: 'get' } })
+  const result = await doRequest<{ a: number }>({ url: '/', options: { method: 'get' } })
   expect(result).toEqual({ a: 1 })
 })
 
 test('doRequest should return expected data with transform response adding {transformReponse: `activated`}', async () => {
-  interface O {
-    a: Number;
-    try: string;
+  type Example = {
+    a: number;
+    transformReponse?: string;
   }
   fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
-  const transformResponse = <O>(data: {a: Number, transformReponse?: string}) => ( { a: 2, try: `activated` } );
-  const result = await doRequest({ url: '/', options: { method: 'get' }, config: { interceptors: { transformResponse } } })
-  expect(result).toEqual({ a: 2, try: `activated` })
+  const transformResponse = <Example>(data: Example): Example => { return { ...data, transformReponse: `activated` } };
+  const result = await doRequest<{ a: number }>({ url: '/', options: { method: 'get' }, config: { interceptors: { transformResponse } } })
+  expect(result).toEqual({ a: 1, transformReponse: `activated` })
 })
 
 test('doRequest should return a message passing on interceptor onError throwing message onError: fail', async () => {
@@ -56,8 +56,11 @@ test('doRequest should return a message passing on interceptor onError throwing 
 })
 
 test('doRequest should return on onError {message: "Bad Request"} if not response.ok ', async () => {
+  type Example = {
+    message: string;
+  }
   fetchMock.mockResponseOnce(JSON.stringify({ message: 'Bad Request' }), { status: 400 });
-  const onError = (data: {message: string}) => { return { ...data } };
+  const onError = <Example>(data: Example): Example => { return { ...data } };
   const result = await doRequest({ url: '/', options: { method: 'get' }, config: { interceptors: { onError } } })
   expect(result).toEqual({ message: 'Bad Request' })
 })
@@ -78,7 +81,7 @@ test('doRequest should throw an error', async () => {
 
 test('doRequest should not throw an error when it passes option undefined', async () => {
   fetchMock.mockResponseOnce(JSON.stringify({ a: 1 }))
-  const result = await doRequest({ url: '/' })
+  const result = await doRequest<{ a: number }>({ url: '/' })
   expect(result).toEqual({ a: 1 })
 })
 
