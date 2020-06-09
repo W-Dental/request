@@ -57,7 +57,7 @@ export const doRequest = <ResponseData, TransformedResponse>({
       }
     )
     .then((result: ResponseData) => (
-      interceptors?.transformResponse ? interceptors.transformResponse(result) : result
+      interceptors?.transformResponse ? (interceptors.transformResponse(result) as TransformedResponse): result
     ))
     .catch(async (error: ResponseData) => {
       if (interceptors?.onError)
@@ -71,7 +71,7 @@ const handler = (baseUrl: string, method: RequestMethods, config?: RequestConfig
     options?: RequestInit | { body: Body };
     params?: UrlParams;
     url: string;
-  }): Promise<ResponseData | TransformedResponse> | never => {
+  }): Promise<TransformedResponse | ResponseData> | never => {
     const { body, ...restOptions } = options;
     return doRequest({
       url: getFormatedUrl({ url: baseUrl + url, params }),
