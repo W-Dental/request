@@ -61,7 +61,7 @@ export const doRequest = <ResponseData, TransformedResponse>({
     ))
     .catch(async (error: ResponseData) => {
       if (interceptors?.onError)
-        return interceptors.onError(error)
+        return interceptors.onError<ResponseData>(error)
       throw error
     })
 }
